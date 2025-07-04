@@ -12,3 +12,8 @@ AUTHORIZED_ADMINS = list(map(int, os.getenv("AUTHORIZED_ADMINS", "").split(","))
 
 # Debug
 print(f"✅ TELEGRAM_TOKEN loaded: {TELEGRAM_TOKEN}")
+print(f"✅ SIP_USER loaded: {SIP_USER}")
+print(f"✅ SIP_PASS loaded: {SIP_PASS}")
+print(f"✅ PJSUA_PATH loaded: {PJSUA_PATH}")
+print(f"✅ DYLD_LIB_PATH loaded: {DYLD_LIB_PATH}")
+print(f"✅ AUTHORIZED_ADMINS loaded: {AUTHORIZED_ADMINS}")

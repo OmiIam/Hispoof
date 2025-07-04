@@ -4,6 +4,11 @@ from bot.config import PJSUA_PATH, SIP_USER, SIP_PASS, DYLD_LIB_PATH
 import logging
 import asyncio
 
+print("PJSUA_PATH:", PJSUA_PATH)
+print("SIP_USER:", SIP_USER)
+print("SIP_PASS:", SIP_PASS)
+print("DYLD_LIB_PATH:", DYLD_LIB_PATH)
+
 def place_call(target, caller_id):
     command = [
         PJSUA_PATH,
