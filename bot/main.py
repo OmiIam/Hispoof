@@ -1,6 +1,6 @@
 from telegram.ext import ApplicationBuilder
-from .config import TELEGRAM_TOKEN
-from .dispatcher import setup_handlers
+from bot.config import TELEGRAM_TOKEN
+from bot.dispatcher import setup_handlers
 print("🚀 Booting bot...")
 def main():
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
