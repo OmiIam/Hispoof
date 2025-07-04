@@ -9,18 +9,26 @@ user_state = {}
 def is_authorized(user_id):
     return user_id in AUTHORIZED_ADMINS
 
+def get_main_keyboard():
+    return [
+        [InlineKeyboardButton("📞 Place Call", callback_data="place_call")],
+        [InlineKeyboardButton("👤 Set Caller ID", callback_data="set_caller_id")],
+        [InlineKeyboardButton("💰 Buy Credits", callback_data="buy_credits")],
+        [InlineKeyboardButton("🧾 My Balance", callback_data="my_balance")],
+        [InlineKeyboardButton("📜 Call History", callback_data="call_history")],
+        [InlineKeyboardButton("🆘 Help / Support", callback_data="help_support")],
+        [InlineKeyboardButton("🌐 Language / Settings", callback_data="settings")],
+        [InlineKeyboardButton("ℹ️ Status", callback_data="status")],
+        [InlineKeyboardButton("🔄 Restart", callback_data="restart")],
+    ]
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print(f"[DEBUG] User ID: {update.effective_user.id}")
     if not is_authorized(update.effective_user.id):
         await update.message.reply_text("❌ Unauthorized access.")
         return
 
-    keyboard = [
-        [InlineKeyboardButton("📞 Place Call", callback_data="place_call")],
-        [InlineKeyboardButton("👤 Set Caller ID", callback_data="set_caller_id")],
-        [InlineKeyboardButton("ℹ️ Status", callback_data="status")]
-    ]
-    await update.message.reply_text("Welcome to SpoofBot", reply_markup=InlineKeyboardMarkup(keyboard))
+    await update.message.reply_text("Welcome to SpoofBot", reply_markup=InlineKeyboardMarkup(get_main_keyboard()))
 
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -36,8 +44,27 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.edit_message_text("📝 Enter new spoofed caller ID:")
         state["awaiting"] = "caller_id"
 
+    elif query.data == "buy_credits":
+        await query.edit_message_text("💰 Buy Credits: This feature is coming soon!")
+
+    elif query.data == "my_balance":
+        await query.edit_message_text("🧾 My Balance: This feature is coming soon!")
+
+    elif query.data == "call_history":
+        await query.edit_message_text("📜 Call History: This feature is coming soon!")
+
+    elif query.data == "help_support":
+        await query.edit_message_text("🆘 Help / Support: Contact @YourSupport or visit our FAQ.")
+
+    elif query.data == "settings":
+        await query.edit_message_text("🌐 Language / Settings: This feature is coming soon!")
+
     elif query.data == "status":
         await query.edit_message_text(f"📞 Current Caller ID: {state['caller_id']}")
+
+    elif query.data == "restart":
+        user_state[user_id] = {"caller_id": "+12065550123"}
+        await query.edit_message_text("🔄 Bot restarted. Welcome to SpoofBot", reply_markup=InlineKeyboardMarkup(get_main_keyboard()))
 
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
@@ -50,11 +77,8 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         target = update.message.text.strip()
         caller_id = state["caller_id"]
         await update.message.reply_text(f"📞 Calling {target} from {caller_id}...")
-        success, error_message = place_call(target, caller_id)
-        if success:
-            await update.message.reply_text("✅ Call initiated successfully.")
-        else:
-            await update.message.reply_text(f"❌ Failed to initiate call. Reason: {error_message}")
+        async for status in place_call(target, caller_id):
+            await update.message.reply_text(status)
         state["awaiting"] = None
 
     elif state.get("awaiting") == "caller_id":
